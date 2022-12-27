@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { MainContainer } from './App.styled';
+import { nanoid } from 'nanoid';
+import ContactInputSection from './ContactInput';
+import ContactListSection from './ContactList';
 
 class App extends Component {
   state = {
@@ -11,4 +14,52 @@ class App extends Component {
     ],
     filter: '',
   };
+
+  deleteContact = contactId => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+    }));
+  };
+  handleFormSubmit = data => {
+    const alreadyExist = this.state.contacts.find(el => el.name === data.name);
+    const contact = { id: nanoid(), name: data.name, number: data.number };
+    alreadyExist
+      ? alert(`${data.name} is already in contacts`)
+      : this.setState(({ contacts }) => ({
+          contacts: [contact, ...contacts],
+        }));
+  };
+  changeFilter = e => {
+    this.setState({ filter: e.currentTarget.value });
+  };
+
+  getVisibleContacts = () => {
+    const { filter, contacts } = this.state;
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+  };
+
+  render() {
+    const totalContacts = this.state.contacts.length;
+    const { filter } = this.state;
+    const visibleContacts = this.getVisibleContacts();
+    return (
+      <MainContainer>
+        <ContactInputSection onSubmit={this.handleFormSubmit} />
+        {!totalContacts ? (
+          <p>Add contact to your phonebook</p>
+        ) : (
+          <ContactListSection
+            contacts={visibleContacts}
+            onDeleteContact={this.deleteContact}
+            value={filter}
+            onChange={this.changeFilter}
+          />
+        )}
+      </MainContainer>
+    );
+  }
 }
+export default App;
