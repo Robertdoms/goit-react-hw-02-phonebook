@@ -60,7 +60,7 @@ class ContactInputSection extends Component {
   }
 }
 ContactInputSection.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
+  onSubmit: PropTypes.string.isRequired,
 };
 export default ContactInputSection;
 
